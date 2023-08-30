@@ -5,25 +5,19 @@ export const Login = () => {
   const [username, setusername] = useState("");
   const [password, setpassword] = useState("");
 
-  const login = ( username, password ) =>
-  {
-    alert( "inside login method" );
-    return axios.post( "http://localhost:8080/login", {
+  const login = async (username, password) => {
+    return await axios.post("http://localhost:8080/login", {
       username: username,
       password: password,
-    },
-      {
-        auth: {
-          username: username,
-          password: password,
-        },
-      } );
-  }
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  };
 
   const handleSubmit = () => {
     const uname = username;
     const pword = password;
-    alert("inside handlesubmit method");
     login(uname, pword).then((response) => {
       if (response.status === 200) {
         alert("success");
