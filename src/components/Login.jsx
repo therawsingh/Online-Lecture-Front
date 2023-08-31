@@ -1,31 +1,37 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Admin } from "./Admin";
+import { Insrtuctor } from "./Insrtuctor";
 
 export const Login = () => {
   const [username, setusername] = useState("");
   const [password, setpassword] = useState("");
+  const [user, setuser] = useState(null);
 
-  const login = async (username, password) => {
-    return await axios.post("http://localhost:8080/login", {
-      username: username,
-      password: password,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  };
+  async function handleSubmit(event) {
+    event.preventDefault();
+    try {
+      await axios
+        .post("http://localhost:8080/login", {
+          username: username,
+          password: password,
+        })
+        .then((res) => {
+          console.log(res.data);
 
-  const handleSubmit = () => {
-    const uname = username;
-    const pword = password;
-    login(uname, pword).then((response) => {
-      if (response.status === 200) {
-        alert("success");
-      } else {
-        alert("error");
-      }
-    });
-  };
+          if (res.status === 200) {
+            alert("Success");
+            setuser(res.data);
+          } else if (res.status === 401) {
+            alert("Fail");
+          } else if (res.status === 404) {
+            alert("Not Found");
+          }
+        });
+    } catch (err) {
+      alert("Bad Credentials");
+    }
+  }
 
   return (
     <div>
@@ -55,6 +61,16 @@ export const Login = () => {
           <button type="submit">Submit</button>
         </form>
       </div>
+
+      {user && (
+        <div>
+          {user.authorities[0].authority === "ROLE_ADMIN" ? (
+            <Admin />
+          ) : (
+            <Insrtuctor />
+          )}
+        </div>
+      )}
     </div>
   );
 };
